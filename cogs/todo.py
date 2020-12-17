@@ -8,6 +8,9 @@ from discord.ext.commands import CheckFailure, check
 OWNER_ID = 267410788996743168
 
 class todo(commands.Cog):
+    """
+    Coming soon!
+    """
     def __init__(self, bot):
         self.bot = bot
         
@@ -18,4 +21,4 @@ class todo(commands.Cog):
     
     @to_do.command(name="list") # thank GOD for the list kwarg
     async def li_st(self, ctx, member: discord.Member = None):
-        
+        pass

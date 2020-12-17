@@ -6,6 +6,7 @@ from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
 from discord.ext.commands import CheckFailure, check
 OWNER_ID = 267410788996743168
+NAMES_TO_IGNORE = ["jsk","load","py","debug","reload","dev"]
 
 class stats(commands.Cog):
     
@@ -14,7 +15,9 @@ class stats(commands.Cog):
         
     @commands.Cog.listener()
     async def on_command(self, ctx):
-        cur = await self.bot.db.execute("SELECT name FROM commandstats WHERE commandname = ?",(ctx.command.name,))
+        if ctx.command.name in NAMES_TO_IGNORE:
+            return
+        cur = await self.bot.db.execute("SELECT commandname FROM commandstats WHERE commandname = ?",(ctx.command.name,))
         data = await cur.fetchone()
         if data is None:
             await self.bot.db.execute("INSERT INTO commandstats VALUES (?, 0)",(ctx.command.name,))
@@ -27,7 +30,7 @@ class stats(commands.Cog):
             return
         
         cur = await self.bot.db.execute("SELECT * FROM commandstats ORDER BY uses DESC")
-        data = await cur.fetchmany(3)
+        data = await cur.fetchmany(10)
         embed = discord.Embed(title="Command stats for SHS Discord",color=discord.Color.random())
         for c in data:
             embed.add_field(name=c[0],value=f"{c[1]} uses")

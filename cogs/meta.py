@@ -54,7 +54,6 @@ class HelpCommand(commands.HelpCommand):
     # This fires once someone does `<prefix>help <command>`
     async def send_command_help(self, command: commands.Command):
         ctx = self.context
-
         embed = discord.Embed(title=f"{self.clean_prefix}{command.qualified_name} {command.signature}",
                               description=f"{command.help}")
         embed.set_footer(text=f"Do {self.clean_prefix}help [command] for more help")
@@ -66,7 +65,7 @@ class HelpCommand(commands.HelpCommand):
         ctx = self.context
 
         embed = discord.Embed(title=f"{self.clean_prefix}{group.qualified_name} {group.signature}",
-                              description=group.help)
+                              description=f"{group.help}")
         embed.set_footer(text=f"Do {self.clean_prefix}help [command] for more help")
 
         for command in group.commands:

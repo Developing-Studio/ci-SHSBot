@@ -68,6 +68,17 @@ class SHSBot(commands.Bot):
         data = await cur.fetchall()
         # todo
         
+    async def add_trash_can(self, message, timeout = 60):
+        await message.add_reaction('🗑️')
+        def check(reaction, user):
+            return user == message.author and str(reaction.emoji) == '🗑️'
+        try:
+            reaction, user = await bot.wait_for('reaction_add', timeout=timeout, check=check)
+        except asyncio.TimeoutError:
+            pass
+        else:
+            await message.delete()
+        
     
             
 bot = SHSBot(command_prefix=commands.when_mentioned_or("?"),description=desc,intents=discord.Intents(reactions = True, messages = True, guilds = True, members = True), max_messages = 100000)

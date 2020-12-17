@@ -184,6 +184,21 @@ class mod(commands.Cog):
                     await asyncio.sleep(0.5)
         except Exception as e:
             await ctx.send(f"`Something went wrong:` ```\n{e}\n```")
+    
+    @commands.command()
+    async def cleanup(self, ctx, user: discord.Member = None, amount = 10):
+        """
+        Cleans up an users messages (or my own messages, if no user is specified.)
+        """
+        if user is None:
+            user = self.bot.user
+        def is_user(m):
+            return m.author == user
+        if amount > 100:
+            await ctx.send("Thats too many messages to purge.")
+
+        deleted = await ctx.channel.purge(limit=amount, check=is_user)
+        await ctx.channel.send(f"Deleted {len(deleted)} messages from {str(user)}")
             
 def setup(bot):
     bot.add_cog(mod(bot))
