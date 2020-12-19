@@ -36,7 +36,18 @@ class tags(commands.Cog):
         
     @tag.command()
     async def alias(self, ctx, aliasname, tagname):
+        """
+        Creates an alias for an existing tag.
+        """
         m = await self.bot.create_alias(aliasname, tagname, ctx.author)
+        await ctx.send(m)
+    
+    @tag.command()
+    async def transfer(self, ctx, user: discord.Member, tagname):
+        """
+        Transfers ownership of a tag to someone else. Note that only tag owners can transfer ownership to others.
+        """
+        m = await self.bot.transfer_tag(user, ctx.author, tagname)
         await ctx.send(m)
         
     @commands.cooldown(1,3,BucketType.user)

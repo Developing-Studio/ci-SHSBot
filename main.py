@@ -63,10 +63,18 @@ class SHSBot(commands.Bot):
         data = await cur.fetchall()
         return data
     
-    async def transfer_tag(self, recieving_user, sending_user,name):
-        cur = await bot.db.execute("SELECT name FROM tags WHERE ownerid = ?",(sending_user.id,))
-        data = await cur.fetchall()
-        # todo
+    async def transfer_tag(self, recieving_user, sending_user, name):
+        cur = await bot.db.execute("SELECT * FROM tags WHERE ownerid = ?",(sending_user.id,))
+        data = await cur.fetchone()
+        print(data)
+        if data is None:
+            return "That tag doesnt exist."
+        if int(data[4]) != sending_user.id:
+            return "You don't own that tag."
+        
+        await bot.db.execute("UPDATE tags SET ownerid = ? WHERE name = ?",(recieving_user.id, name,))
+        await bot.db.commit()
+        return (f"Tag ownership of {name} successfully transferred to {str(recieving_user)}.")
         
     async def add_trash_can(self, message, timeout = 60):
         await message.add_reaction('🗑️')

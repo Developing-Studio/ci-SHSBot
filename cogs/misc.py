@@ -11,6 +11,7 @@ import inspect
 import hashlib
 from collections import OrderedDict, deque, Counter
 from .utils import time, formats
+import async_cse, aiowiki
 OWNER_ID = 267410788996743168
 
 def tick(label=None):
@@ -30,6 +31,35 @@ class misc(commands.Cog):
     """
     def __init__(self, bot):
         self.bot = bot
+        with open("GSEARCH_TOKEN.txt",'r') as t:
+            TOKEN = t.readline()
+            self.google_client = async_cse.Search(TOKEN) # create the Search client (uses Google by default!)
+            
+            self.wiki = aiowiki.Wiki.wikipedia("en")
+    
+    async def cog_unload(self):
+        await self.google_client.close()
+    
+    @commands.command(aliases=["g"])
+    @commands.cooldown(1, 15, BucketType.user)
+    async def google(self, ctx, *, query):
+        results = await self.google_client.search(query, safesearch=False) # returns a list of async_cse.Result objects
+        first_result = results[0] # Grab the first result
+        embed = discord.Embed(title=first_result.title,url=first_result.url,description=first_result.description,color=discord.Color.random())
+        embed.set_footer(text=f"Result 1/{len(results)}")
+        try:
+            embed.set_thumbnail(url=first_result.image_url)
+        except:
+            pass
+        await ctx.send(embed=embed)
+        
+    @commands.command(name="wikipedia",aliases=["wiki"])
+    async def _wikipedia(self, ctx, *, query):
+        page = self.wiki.get_page(query)
+        page_content = (await page.text())[0:1000]
+        embed = discord.Embed(title=page.title, description=f"{page_content}...", color=discord.Color.random())
+        embed.set_footer(text="Note: this command is a work in progress.")
+        await ctx.send(embed=embed)
         
     @commands.command()
     async def sha256(self, ctx, *, text):
